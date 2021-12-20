@@ -27,7 +27,7 @@ public class Main {
             } else {
                 error("Incorrect operands.");
             }
-        } else if (!GITLET_FOLDER.exists()){
+        } else if (!GITLET_FOLDER.exists()) {
             error("Not in an initialized Gitlet directory.");
         } else if (args[0].equals("add")) {
             add(args);
@@ -46,19 +46,23 @@ public class Main {
         } else if (args[0].equals("checkout")) {
             checkout(args);
         } else if (args[0].equals("branch")) {
-            if (args.length != 2) {
-                error("Incorrect operands.");
-            }
-            CommitTree.branch(args[1]);
+            branch(args);
         } else if (args[0].equals("rm-branch")) {
-            if (args.length != 2) {
-                error("Incorrect operands.");
-            }
-            CommitTree.rm_branch(args[1]);
+            rmBranch(args);
         } else if (args[0].equals("reset")) {
             CommitTree.reset(args);
         } else if (args[0].equals("merge")) {
             CommitTree.merge(args);
+        } else if (args[0].equals("add-remote")) {
+            addRemote(args);
+        } else if (args[0].equals("rm-remote")) {
+            rmRemote(args);
+        } else if (args[0].equals("push")) {
+            push(args);
+        } else if (args[0].equals("fetch")) {
+            fetch(args);
+        } else if (args[0].equals("pull")) {
+            Remote.pull(args);
         } else {
             error("No command with that name exists.");
         }
@@ -71,14 +75,18 @@ public class Main {
     /** Initializes the .gitlet directory. */
     public static void setupDirectory() {
         if (GITLET_FOLDER.exists()) {
-            error("A Gitlet version-control system already exists in the current directory.");
+            String m = "A Gitlet version-control system already exists";
+            m += " in the current directory.";
+            error(m);
         }
         GITLET_FOLDER.mkdir();
+        Remote.initialize();
         StagingArea.initialize();
         CommitTree.initCommit();
     }
 
-    /** Directs the add command to StagingArea. */
+    /** Directs the add command to StagingArea.
+     * @param args */
     public static void add(String... args) {
         if (args.length != 2) {
             error("Incorrect operands.");
@@ -87,7 +95,8 @@ public class Main {
         StagingArea.add(current);
     }
 
-    /** Directs the commit command to CommitTree. */
+    /** Directs the commit command to CommitTree.
+     * @param args */
     public static void commit(String... args) {
         if (args.length == 1 || args[1].length() == 0) {
             error("Please enter a commit message.");
@@ -99,7 +108,26 @@ public class Main {
         CommitTree.addCommit(args[1], null);
     }
 
-    /** Directs the remove command to StagingArea. */
+    /** Directs the branch command to CommitTree.
+     * @param args */
+    public static void branch(String... args) {
+        if (args.length != 2) {
+            error("Incorrect operands.");
+        }
+        CommitTree.branch(args[1]);
+    }
+
+    /** Directs the rm-branch command to CommitTree.
+     * @param args */
+    public static void rmBranch(String... args) {
+        if (args.length != 2) {
+            error("Incorrect operands.");
+        }
+        CommitTree.rmBranch(args[1]);
+    }
+
+    /** Directs the remove command to StagingArea.
+     * @param args */
     public static void remove(String... args) {
         if (args.length != 2) {
             error("Incorrect operands.");
@@ -107,7 +135,8 @@ public class Main {
         StagingArea.rm(args[1]);
     }
 
-    /** Directs the log command to class CommitTree. */
+    /** Directs the log command to class CommitTree.
+     * @param args */
     public static void log(String... args) {
         if (args.length != 1) {
             error("Incorrect operands");
@@ -115,7 +144,8 @@ public class Main {
         CommitTree.printCommitHistory();
     }
 
-    /** Directs the global-log command to class CommitTree. */
+    /** Directs the global-log command to class CommitTree.
+     * @param args */
     public static void globalLog(String... args) {
         if (args.length != 1) {
             error("Incorrect operands");
@@ -123,7 +153,8 @@ public class Main {
         CommitTree.printAllCommits();
     }
 
-    /** Directs the checkout command to class CommitTree. */
+    /** Directs the checkout command to class CommitTree.
+     * @param args */
     public static void checkout(String... args) {
         if (args.length < 2) {
             error("Incorrect operands");
@@ -131,7 +162,8 @@ public class Main {
         CommitTree.checkout(Arrays.copyOfRange(args, 1, args.length));
     }
 
-    /** Prints out MESSAGE and exits with error code 0. */
+    /** Prints out MESSAGE and exits with error code 0.
+     * @param message */
     public static void error(String message) {
         if (message != null && !message.equals("")) {
             System.out.println(message);
@@ -144,4 +176,29 @@ public class Main {
         StagingArea.printStatus();
     }
 
+    /** Directs the add-remote command to Remote.
+     * @param args */
+    public static void addRemote(String... args) {
+        Remote.addRemote(args);
+    }
+
+    /** Directs the rm-remote command to Remote.
+     * @param args  */
+    public static void rmRemote(String... args) {
+        Remote.rmRemote(args);
+    }
+
+    /** Directs the push command to Remote.
+     * @param args */
+    public static void push(String... args) {
+        Remote.push(args);
+    }
+
+    /** Directs the fetch command to remote.
+     * @param args */
+    public static void fetch(String... args) {
+        Remote.fetch(args);
+    }
+
 }
+
